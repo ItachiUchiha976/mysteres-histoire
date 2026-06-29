@@ -656,7 +656,11 @@
     <h2>Reçois la prochaine enquête historique</h2>
     <p>Inscris-toi pour être alerté des prochains ebooks et des nouvelles découvertes archéologiques</p>
     <form class="email-form" onsubmit="handleEmail(event)">
-      <input type="email" placeholder="ton@email.fr" required>
+      <input type="hidden" name="access_key" value="d97a8c73-b827-48bb-b437-e053a73fdb7e">
+      <input type="hidden" name="subject" value="Lead mysteres-histoire">
+      <input type="hidden" name="from_name" value="Mystères de l'Histoire">
+      <input type="checkbox" name="botcheck" style="display:none !important" tabindex="-1" autocomplete="off">
+      <input type="email" name="email" placeholder="ton@email.fr" required>
       <button type="submit" class="btn-email">Je m'inscris</button>
     </form>
     <p class="email-note">Pas de spam. Désinscription en 1 clic. Données protégées (RGPD).</p>
@@ -704,8 +708,24 @@
 <script>
 function handleEmail(e) {
   e.preventDefault();
-  document.getElementById('email-confirm').style.display = 'block';
-  e.target.reset();
+  fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    body: new FormData(e.target)
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if (d.success) {
+      document.getElementById('email-confirm').style.display = 'block';
+      e.target.reset();
+    } else {
+      document.getElementById('email-confirm').textContent = 'Une erreur est survenue. Réessaie dans un instant.';
+      document.getElementById('email-confirm').style.display = 'block';
+    }
+  })
+  .catch(function(){
+    document.getElementById('email-confirm').textContent = 'Une erreur est survenue. Réessaie dans un instant.';
+    document.getElementById('email-confirm').style.display = 'block';
+  });
 }
 </script>
 
